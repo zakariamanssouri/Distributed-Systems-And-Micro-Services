@@ -2,8 +2,12 @@ package zakaria.manssouri.bankaccountmicroservice.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import zakaria.manssouri.bankaccountmicroservice.dtos.BankAccountRequestDTO;
+import zakaria.manssouri.bankaccountmicroservice.dtos.BankAccountResponseDTO;
 import zakaria.manssouri.bankaccountmicroservice.entities.BankAccount;
+import zakaria.manssouri.bankaccountmicroservice.mappers.AccountMapper;
 import zakaria.manssouri.bankaccountmicroservice.repositories.BankAccountRepository;
+import zakaria.manssouri.bankaccountmicroservice.service.AccountService;
 
 import javax.websocket.server.PathParam;
 import java.util.List;
@@ -14,9 +18,13 @@ import java.util.UUID;
 public class BankAccountController {
 
     private BankAccountRepository bankAccountRepository;
+    private AccountService accountService;
+    private AccountMapper mapper;
 
-    public BankAccountController(BankAccountRepository bankAccountRepository) {
+    public BankAccountController(BankAccountRepository bankAccountRepository, AccountService accountService, AccountMapper mapper) {
         this.bankAccountRepository = bankAccountRepository;
+        this.accountService = accountService;
+        this.mapper = mapper;
     }
 
     @GetMapping("/bankAccounts")
@@ -31,9 +39,8 @@ public class BankAccountController {
     }
 
     @PostMapping("/bankAccounts")
-    public BankAccount saveAccount(@RequestBody BankAccount bankAccount){
-        if (bankAccount.getId() == null)bankAccount.setId(UUID.randomUUID().toString());
-        return bankAccountRepository.save(bankAccount);
+    public BankAccountResponseDTO saveAccount(@RequestBody BankAccountRequestDTO bankAccount){
+       return  accountService.addAccount(bankAccount);
     }
 
     @PutMapping("/bankAccounts/{id}")
